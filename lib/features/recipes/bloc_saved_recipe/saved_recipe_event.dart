@@ -4,7 +4,6 @@ import 'package:recpie/features/recipes/models/recipe_model.dart';
 
 
 
-
 abstract class SavedRecipeEvent extends Equatable {
   const SavedRecipeEvent();
 
@@ -13,6 +12,8 @@ abstract class SavedRecipeEvent extends Equatable {
 }
 
 class LoadSavedRecipes extends SavedRecipeEvent {}
+
+class ResetSavedRecipes extends SavedRecipeEvent {}
 
 class SaveRecipe extends SavedRecipeEvent {
   final Recipe recipe;

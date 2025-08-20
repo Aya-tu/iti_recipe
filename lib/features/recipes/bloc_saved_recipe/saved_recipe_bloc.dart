@@ -6,7 +6,6 @@ import 'package:recpie/database.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_event.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_state.dart';
 
-
 // saved_recipe_bloc.dart
 // ... imports
 
@@ -22,7 +21,7 @@ class SavedRecipeBloc extends Bloc<SavedRecipeEvent, SavedRecipeState> {
 
     // Load saved recipes when bloc is created
     add(LoadSavedRecipes());
-    
+
     // Listen to auth state changes
     _authSubscription = _auth.authStateChanges().listen((user) {
       add(LoadSavedRecipes());

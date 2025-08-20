@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:recpie/features/recipes/widgets/main_navigation.dart';
 import 'package:recpie/features/signin_signup/auth/bloc/auth_event.dart';
 import 'package:recpie/features/signin_signup/auth/bloc/auth_state.dart';
 import '../auth/bloc/auth_bloc.dart';
-
 import 'signup_screen.dart';
 
 class LoginPage extends StatefulWidget {
@@ -34,6 +34,8 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(content: Text(state.error!)),
             );
+          }else{
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>const MainNavigation()));
           }
         },
         builder: (context, state) {

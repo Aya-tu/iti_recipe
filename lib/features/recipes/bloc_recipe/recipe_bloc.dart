@@ -4,14 +4,12 @@ import 'package:equatable/equatable.dart';
 import 'package:http/http.dart' as http;
 import 'package:recpie/features/recipes/models/recipe_model.dart';
 
-
 part 'recipe_event.dart';
 part 'recipe_state.dart';
 
 class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
   RecipeBloc() : super(const RecipeState()) {
     on<LoadRecipes>(_onLoadRecipes);
-    
   }
 
   Future<void> _onLoadRecipes(
@@ -20,7 +18,8 @@ class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
   ) async {
     emit(state.copyWith(status: const LoadingStatus()));
     try {
-      final response = await http.get(Uri.parse('https://dummyjson.com/recipes'));
+      final response =
+          await http.get(Uri.parse('https://dummyjson.com/recipes'));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
         final recipes = (data['recipes'] as List)
@@ -32,7 +31,8 @@ class RecipeBloc extends Bloc<RecipeEvent, RecipeState> {
         ));
       } else {
         emit(state.copyWith(
-          status: FailureStatus('Failed to load recipes: ${response.statusCode}'),
+          status:
+              FailureStatus('Failed to load recipes: ${response.statusCode}'),
           error: 'Failed to load recipes: ${response.statusCode}',
         ));
       }

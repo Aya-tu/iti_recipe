@@ -1,3 +1,4 @@
+// recipe_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Recipe {
@@ -12,8 +13,10 @@ class Recipe {
   final int cookTimeMinutes;
   final List<String> tags;
   final DateTime? savedAt;
+  final String? userId;
+  final String? userEmail;
   
-  Recipe( {
+  Recipe({
     required this.id,
     required this.name,
     required this.image,
@@ -25,23 +28,50 @@ class Recipe {
     required this.cookTimeMinutes,
     required this.tags,
     this.savedAt,
+    this.userId,
+    this.userEmail,
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
+    // Handle different data types that might come from different sources
+    int parseId(dynamic id) {
+      if (id is int) return id;
+      if (id is String) return int.tryParse(id) ?? 0;
+      return 0;
+    }
+    
+    int parseTime(dynamic time) {
+      if (time is int) return time;
+      if (time is String) return int.tryParse(time) ?? 0;
+      return 0;
+    }
+    
+    List<String> parseList(dynamic list) {
+      if (list is List<String>) return list;
+      if (list is List<dynamic>) {
+        return list.map((item) => item.toString()).toList();
+      }
+      return [];
+    }
+
     return Recipe(
-      id: json['id'],
-      name: json['name'],
-      image: json['image'],
-      difficulty: json['difficulty'] ?? 'Medium',
-      description: json['description'] ?? '',
-      ingredients: List<String>.from(json['ingredients'] ?? []),
-      instructions: List<String>.from(json['instructions'] ?? []),
-      prepTimeMinutes: json['prepTimeMinutes'] ?? 0,
-      cookTimeMinutes: json['cookTimeMinutes'] ?? 0,
-      tags: List<String>.from(json['tags'] ?? []),
+      id: parseId(json['id']),
+      name: json['name']?.toString() ?? '',
+      image: json['image']?.toString() ?? '',
+      difficulty: json['difficulty']?.toString() ?? 'Medium',
+      description: json['description']?.toString() ?? '',
+      ingredients: parseList(json['ingredients']),
+      instructions: parseList(json['instructions']),
+      prepTimeMinutes: parseTime(json['prepTimeMinutes']),
+      cookTimeMinutes: parseTime(json['cookTimeMinutes']),
+      tags: parseList(json['tags']),
       savedAt: json['savedAt'] != null 
-          ? (json['savedAt'] as Timestamp).toDate() 
+          ? (json['savedAt'] is Timestamp 
+              ? (json['savedAt'] as Timestamp).toDate()
+              : DateTime.tryParse(json['savedAt'].toString()))
           : null,
+      userId: json['userId']?.toString(),
+      userEmail: json['userEmail']?.toString(),
     );
   }
 
@@ -57,7 +87,8 @@ class Recipe {
       'prepTimeMinutes': prepTimeMinutes,
       'cookTimeMinutes': cookTimeMinutes,
       'tags': tags,
+      'userId': userId,
+      'userEmail': userEmail,
     };
   }
-  
 }

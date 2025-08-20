@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'package:recpie/features/recipes/bloc_my_recipe/my_recipe_bloc.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_bloc.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_event.dart';
 import 'package:recpie/features/recipes/views/saved_recipe_screen.dart';
@@ -27,10 +25,12 @@ class App extends StatelessWidget {
             authRepository: AuthRepository(),
           )..add(AppStarted()),
         ),
+        BlocProvider<SavedRecipeBloc>(
+        create: (context) => SavedRecipeBloc(),
+      ),
         BlocProvider(
           create: (context) => RecipeBloc(),
         ),
-        BlocProvider(create: (context) => MyRecipeBloc()),
         BlocProvider<RecipeBloc>(
       create: (context) => RecipeBloc()..add(LoadRecipes()),
     ),
@@ -45,7 +45,9 @@ class App extends StatelessWidget {
           primarySwatch: Colors.blue,
           fontFamily: 'Inter',
         ),
-        home: const AuthWrapper(),
+        home: const AuthWrapper(
+          
+        ),
         routes: {
           '/saved': (context) => const SavedRecipesScreen(),
         }
@@ -66,7 +68,9 @@ class AuthWrapper extends StatelessWidget {
           // Load recipes when authenticated
           context.read<RecipeBloc>().add(LoadRecipes());
           return const MainNavigation(); // <-- new widget with bottom nav
-        } else {
+        } 
+        
+        else {
           return const LoginPage();
         }
       },

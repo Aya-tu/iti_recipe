@@ -12,6 +12,7 @@ class Database {
     if (user == null) {
       throw Exception('User not authenticated');
     }
+    print("Using uid: ${user.uid}");
     return FirebaseFirestore.instance
         .collection('users')
         .doc(user.uid)
@@ -30,6 +31,7 @@ class Database {
         ...recipe.toJson(),
         'savedAt': FieldValue.serverTimestamp(),
         'userId': user.uid,
+        'userEmail': user.email,
       });
     } catch (e) {
       print('Error saving recipe: $e');
