@@ -60,24 +60,25 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.4
-  
-flutter_launcher_icons:
+
+
+flutter_icons:
   android: true
   ios: true
-  image_path: "assets/icon/app_icon.png"
-  adaptive_icon_background: "#FF6600"   # Orange background
-  adaptive_icon_foreground: "assets/icon/app_icon.png"
-  remove_alpha_ios: true
-
+  image_path: "assets/app_logo.png"
+  adaptive_icon_foreground: "assets/app_logo.png"
+  adaptive_icon_background: "#ffffff"
 
 flutter_native_splash:
-  color: "#ffffff"   # background color (white here, you can change it)
-  image: assets/icon/app_icon.png   # your logo path
+  color: "#75Bc2F"
+  image: assets/app_logo.png
   android: true
   ios: true
-  web: false
+  android_gravity: center        # centers image on Android
+  ios_content_mode: center       # centers image on iOS
+  web_image_mode: center         # centers image on web
 
-
+  
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -92,7 +93,8 @@ flutter:
 
   # To add assets to your application, add an assets section, like this:
   assets:
-    - assets/icon/app_icon.png
+    - assets/app_logo.png
+    
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

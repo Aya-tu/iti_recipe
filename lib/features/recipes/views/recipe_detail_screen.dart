@@ -1,11 +1,11 @@
-// recipe_detail_screen.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_bloc.dart';
 import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_event.dart';
+import 'package:recpie/features/recipes/bloc_saved_recipe/saved_recipe_state.dart';
 import 'package:recpie/features/recipes/models/recipe_model.dart';
-import 'package:recpie/database.dart';
+import 'package:recpie/features/signin_signup/view/signup_screen.dart';
 
 class RecipeDetailScreen extends StatefulWidget {
   final Recipe recipe;
@@ -19,7 +19,6 @@ class RecipeDetailScreen extends StatefulWidget {
 class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
   bool _isSaved = false;
   bool _isCheckingSavedStatus = true;
-  final Database _database = Database();
 
   @override
   void initState() {
@@ -27,55 +26,68 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
     _checkIfSaved();
   }
 
-  void _checkIfSaved() async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        setState(() {
-          _isSaved = false;
-          _isCheckingSavedStatus = false;
-        });
-        return;
-      }
-      
-      final isSaved = await _database.isRecipeSaved(widget.recipe.id.toString());
+  void _checkIfSaved() {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
       setState(() {
-        _isSaved = isSaved;
+        _isSaved = false;
         _isCheckingSavedStatus = false;
       });
-    } catch (e) {
-      print('Error checking if recipe is saved: $e');
+      return;
+    }
+
+    final savedRecipesBloc = BlocProvider.of<SavedRecipeBloc>(context);
+
+
+    if (savedRecipesBloc.state is SavedRecipeLoaded) {
+      final state = savedRecipesBloc.state as SavedRecipeLoaded;
       setState(() {
+        _isSaved = state.recipes.any((recipe) => recipe.id == widget.recipe.id);
         _isCheckingSavedStatus = false;
+      });
+    } else {
+
+      if (savedRecipesBloc.state is! SavedRecipeLoading) {
+        savedRecipesBloc.add(LoadSavedRecipes());
+      }
+      savedRecipesBloc.stream.listen((state) {
+        if (state is SavedRecipeLoaded) {
+          if (mounted) {
+            setState(() {
+              _isSaved =
+                  state.recipes.any((recipe) => recipe.id == widget.recipe.id);
+              _isCheckingSavedStatus = false;
+            });
+          }
+        } else if (state is SavedRecipeError) {
+          if (mounted) {
+            setState(() {
+              _isCheckingSavedStatus = false;
+            });
+          }
+        }
       });
     }
   }
 
-  void _toggleSaveRecipe(BuildContext context) async {
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please sign in to save recipes')),
-        );
-        return;
-      }
-      
-      
-      setState(() {
-        _isSaved = !_isSaved;
-      });
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
-      );
+  void _toggleSaveRecipe(BuildContext context) {
+    final savedRecipesBloc = BlocProvider.of<SavedRecipeBloc>(context);
+
+    if (_isSaved) {
+      savedRecipesBloc.add(RemoveSavedRecipe(widget.recipe.id.toString()));
+    } else {
+      savedRecipesBloc.add(SaveRecipe(widget.recipe));
     }
+
+    setState(() {
+      _isSaved = !_isSaved;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.recipe.name),
@@ -137,10 +149,13 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
                   ? const Center(child: CircularProgressIndicator())
                   : ElevatedButton.icon(
                       onPressed: () => _toggleSaveRecipe(context),
-                      icon: Icon(_isSaved ? Icons.bookmark_remove : Icons.bookmark),
+                      icon: Icon(
+                          _isSaved ? Icons.bookmark_remove : Icons.bookmark),
                       label: Text(_isSaved ? 'Remove Saved' : 'Save Recipe'),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: _isSaved ? Colors.grey : Theme.of(context).primaryColor,
+                        backgroundColor: _isSaved
+                            ? Colors.grey
+                            : Theme.of(context).primaryColor,
                         foregroundColor: Colors.white,
                         minimumSize: const Size(double.infinity, 50),
                       ),
@@ -148,8 +163,9 @@ class _RecipeDetailScreenState extends State<RecipeDetailScreen> {
             else
               ElevatedButton.icon(
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Please sign in to save recipes')),
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const SignUpPage()),
                   );
                 },
                 icon: const Icon(Icons.bookmark),

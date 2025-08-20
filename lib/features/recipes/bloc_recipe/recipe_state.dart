@@ -1,6 +1,5 @@
 part of 'recipe_bloc.dart';
 
-// Status classes
 abstract class RecipeStatus extends Equatable  {
   const RecipeStatus();
   
@@ -35,7 +34,6 @@ class FailureStatus extends RecipeStatus {
   List<Object> get props => [message];
 }
 
-// State class
 class RecipeState extends Equatable {
   final RecipeStatus status;
   final List<Recipe> recipes;

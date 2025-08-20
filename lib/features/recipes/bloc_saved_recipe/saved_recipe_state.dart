@@ -1,4 +1,3 @@
-// saved_recipe_state.dart
 import 'package:equatable/equatable.dart';
 import 'package:recpie/features/recipes/models/recipe_model.dart';
 
@@ -19,6 +18,8 @@ class SavedRecipeLoaded extends SavedRecipeState {
 
   @override
   List<Object> get props => [recipes];
+
+  get savedRecipes => null;
 }
 
 class SavedRecipeError extends SavedRecipeState {

@@ -1,4 +1,3 @@
-// recipe_model.dart
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Recipe {
@@ -33,7 +32,7 @@ class Recipe {
   });
 
   factory Recipe.fromJson(Map<String, dynamic> json) {
-    // Handle different data types that might come from different sources
+    
     int parseId(dynamic id) {
       if (id is int) return id;
       if (id is String) return int.tryParse(id) ?? 0;
@@ -91,4 +90,6 @@ class Recipe {
       'userEmail': userEmail,
     };
   }
+
+  static fromMap(Map<String, dynamic> data) {}
 }

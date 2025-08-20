@@ -16,9 +16,7 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    
     return MultiBlocProvider(
-      
       providers: [
         BlocProvider(
           create: (context) => AuthBloc(
@@ -26,33 +24,29 @@ class App extends StatelessWidget {
           )..add(AppStarted()),
         ),
         BlocProvider<SavedRecipeBloc>(
-        create: (context) => SavedRecipeBloc(),
-      ),
+          create: (context) => SavedRecipeBloc(),
+        ),
         BlocProvider(
           create: (context) => RecipeBloc(),
         ),
         BlocProvider<RecipeBloc>(
-      create: (context) => RecipeBloc()..add(LoadRecipes()),
-    ),
-    BlocProvider<SavedRecipeBloc>(
-      create: (context) => SavedRecipeBloc()..add(LoadSavedRecipes()),
-    ),
+          create: (context) => RecipeBloc()..add(LoadRecipes()),
+        ),
+        BlocProvider<SavedRecipeBloc>(
+          create: (context) => SavedRecipeBloc()..add(LoadSavedRecipes()),
+        ),
       ],
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'RecipeBook',
-        theme: ThemeData(
-          primarySwatch: Colors.blue,
-          fontFamily: 'Inter',
-        ),
-        home: const AuthWrapper(
-          
-        ),
-        routes: {
-          '/saved': (context) => const SavedRecipesScreen(),
-        }
-
-      ),
+          debugShowCheckedModeBanner: false,
+          title: 'RecipeBook',
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            fontFamily: 'Inter',
+          ),
+          home: const AuthWrapper(),
+          routes: {
+            '/saved': (context) => const SavedRecipesScreen(),
+          }),
     );
   }
 }
@@ -60,17 +54,14 @@ class App extends StatelessWidget {
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
 
-   @override
+  @override
   Widget build(BuildContext context) {
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is Authenticated) {
-          // Load recipes when authenticated
           context.read<RecipeBloc>().add(LoadRecipes());
-          return const MainNavigation(); // <-- new widget with bottom nav
-        } 
-        
-        else {
+          return const MainNavigation(); 
+        } else {
           return const LoginPage();
         }
       },

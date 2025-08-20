@@ -48,17 +48,17 @@ class ProfileScreen extends StatelessWidget {
 
             const SizedBox(height: 30),
 
-            // User info
+      
             _buildInfoCard("Name", state.userName),
             const SizedBox(height: 15),
             _buildInfoCard("Email", state.userEmail),
             const SizedBox(height: 15),
 
-            // User ID
+          
 
             const Spacer(),
 
-            // Sign out button
+            
             Center(
               child: ElevatedButton(
                 onPressed: () => _signOut(context),
